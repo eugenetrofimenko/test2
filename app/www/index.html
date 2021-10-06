@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Stock</title>
+		<link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+		<!-- google font -->
+		<link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" rel="stylesheet" type="text/css" />
+		<link href="assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+		<link href="assets/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+		<link href="assets/css/ionicons.css" rel="stylesheet" type="text/css">
+		<link href="assets/css/simple-line-icons.css" rel="stylesheet" type="text/css">
+		<link href="assets/css/jquery.mCustomScrollbar.css" rel="stylesheet">
+		<link href="assets/css/style.css" rel="stylesheet">
+		<link href="assets/css/header.css" rel="stylesheet">
+		<link href="assets/css/menu.css" rel="stylesheet">
+		<link href="assets/css/responsive.css" rel="stylesheet">
+	</head>
+
+	<body>
+		<div class="wrapper">
+			<div class="container_full">
+
+				<main class="content_wrapper">
+
+					<div class="container-fluid">
+
+						<!-- state start-->
+						<div class="row">
+							<div class=" col-xl-6">
+
+
+								<div class="card card-shadow mb-4">
+									<div class="card-header">
+										<div class="card-title">
+											Stock
+										</div>
+									</div>
+									<div class="card-body">
+										<table class="table">
+											<thead>
+												<tr>
+													<th scope="col">#</th>
+													<th scope="col">Title</th>
+													<th scope="col">Price, USD</th>
+													<th scope="col">Date and time</th>
+												</tr>
+											</thead>
+											<tbody id=tbody>
+<!--												<tr>
+													<th scope="row">1</th>
+													<td>ttttt</td>
+													<td>Doe</td>
+													<td>@mdo</td>
+												</tr>-->
+											</tbody>
+										</table>
+									</div>
+								</div>
+							<!-- -->
+
+
+
+
+
+									<div class="card-body">
+										<!-- Button trigger modal -->
+										<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+											New Item
+										</button>
+
+										<!-- Modal -->
+										<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+											<div class="modal-dialog" role="document">
+												<div class="modal-content">
+													<div class="modal-header">
+														<h5 class="modal-title" id="exampleModalLabel">Add new item</h5>
+														<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+															<span aria-hidden="true">&times;</span>
+														</button>
+													</div>
+													<div class="modal-body">
+														<!--Woohoo, you're reading this text in a modal!-->
+
+															<form onsubmit="return false;" id=saveform>
+															<label for="title">Title</label>
+															<div class="form-group" id=titlegroup>
+																<input type="text" class="form-control has-input changeable" name=title id=title>
+																<small id=titlehelp class="form-text"></small>
+															</div>
+															<label for="Price">Price</label>
+															<div class="form-group" id=pricegroup>
+																<input type="text" class="form-control has-input changeable" name=price id=price>
+																<small id=pricehelp class="form-text"></small>
+															</div>
+															<label for="datetime">Date and time</label>
+															<div class="form-group" id=datetimegroup>
+																<input type="text" class="form-control has-input changeable" name=datetime id=datetime>
+																<small id=datetimehelp class="form-text"></small>
+															</div>
+															<!--<button type="submit" class="btn btn-primary">
+																Submit
+															</button>-->
+															<button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="for(i=0; i<inputs.length; i++) { inputs[i].value=''; };">
+																Close
+															</button>
+															<button type="button" class="btn btn-primary" data-dismiss="modal" id=addbtn onclick="sendform(); return false;" sstyle="pointer-events:none">
+																Add
+															</button>
+														</form>
+<script>
+var i;
+var inputs=document.body.getElementsByClassName('changeable');
+for(i=0; i<inputs.length; i++) {
+	inputs[i].addEventListener('change', changeFunction, false);
+	inputs[i].addEventListener('keyup', changeFunction, false);
+};
+function changeFunction(e) {
+	//alert(e.target.id);
+	fetch( 'check.php?type='+e.target.name+'&value='+e.target.value, { timeout:10000 } )
+	.catch( err => console.error(err) )
+	.then( response => response.json() )
+	.catch( err => console.error(err) )
+	.then( function (json) {
+		if (json.result=='error') {
+			document.getElementById(e.target.id+'group').className='form-group has-warning';
+			document.getElementById(e.target.id+'help').innerHTML=json.msg;
+			document.getElementById('addbtn').style['pointer-events']='none';
+			//document.getElementById('saveform').onsubmit='return false;';
+		} else {
+			document.getElementById(e.target.id+'group').className='form-group';
+			document.getElementById(e.target.id+'help').innerHTML='';
+			document.getElementById('addbtn').style['pointer-events']='';
+			//document.getElementById('saveform').onsubmit='return true;';
+		};
+	});
+};
+
+function sendform() {
+	var bodydata='',i=0;
+	for(i=0; i<inputs.length; i++) {
+		bodydata+=inputs[i].name+'='+encodeURIComponent(inputs[i].value)+'&';
+		inputs[i].value='';
+	};
+	fetch('save.php', {
+		body: bodydata,
+		headers: {
+			"Content-Type": "application/x-www-form-urlencoded",
+		},
+		method: "post"
+	})
+	.catch( err => console.error(err) )
+	.then( response => response.json() )
+	.catch( err => console.error(err) )
+	.then( function (json) {
+		console.log('sendform');
+		//console.log(json);
+		for(i=0; i<json.length; i++) {
+			//console.log(json[i]['ff_id']);
+			document.getElementById('tbody').innerHTML+='<tr><th scope="row">'+json[i]['ff_id']+'</th><td>'+json[i]['ff_title']+'</td><td>'+json[i]['ff_price']+'</td><td>'+json[i]['ff_datetime']+'</td></tr>';
+		};
+	});
+
+};
+sendform();
+</script>
+
+
+
+
+													</div>
+													<!--<div class="modal-footer">
+														<button type="button" class="btn btn-secondary" data-dismiss="modal">
+															Close
+														</button>
+														<button type="button" class="btn btn-primary">
+															Add
+														</button>
+													</div>-->
+												</div>
+											</div>
+										</div>
+									</div>
+
+
+
+							<!-- -->
+							</div>
+						
+						</div>
+						<!-- state end-->
+					</div>
+
+				</main>
+				<!--main contents end-->
+
+			</div>
+			<!-- Content_right_End -->
+
+		</div>
+		<script type="text/javascript" src="assets/js/jquery.min.js"></script>
+		<script type="text/javascript" src="assets/js/popper.min.js"></script>
+		<script type="text/javascript" src="assets/js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+		<script type="text/javascript" src="assets/js/jquery.dcjqaccordion.2.7.js"></script>
+		<script src="assets/js/custom.js" type="text/javascript"></script>
+	</body>
+
+</html>
